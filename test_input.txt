@@ -1,0 +1,6 @@
+int x = 10;
+String name = "Davi";
+x = x + 5;
+if (x > 10) {
+    System.out.println(name);
+}
