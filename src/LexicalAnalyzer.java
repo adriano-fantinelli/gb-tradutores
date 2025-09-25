@@ -6,7 +6,7 @@ import java.util.regex.*;
 public class LexicalAnalyzer {
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("Uso: java LexicalAnalyzer <arquivo-fonte>");
+            System.out.println("Uso: java src.LexicalAnalyzer <arquivo-fonte>");
             return;
         }
 
@@ -22,37 +22,43 @@ public class LexicalAnalyzer {
     }
 
     private static void analyzeLine(String line) {
-        String[] keywords = {"int", "String", "if", "else", "while", "for", "return", "System", "out", "println"};
-        String keywordPattern = String.join("|", keywords);
+    String[] keywords = { "int","String","if","else","while","for","return",
+                          "System","out","println","float","double","char","boolean",
+                          "true","false" };
+    String keywordPattern = "\\b(" + String.join("|", keywords) + ")\\b";
 
-        String identifier = "[a-zA-Z_][a-zA-Z0-9_]*";
-        String number = "\\d+";
-        String operator = "[+\\-*/=><]";
-        String stringLiteral = "\".*?\"";
-        String methodPattern = identifier + "\\(";
-        String delimiter = "[;{}()]";
+    String methodPattern = "[a-zA-Z_][a-zA-Z0-9_]*\\(";
+    String identifierPattern = "[a-zA-Z_][a-zA-Z0-9_]*";
+    String numberPattern = "\\d+(\\.\\d+)?([eE][+-]?\\d+)?";
+    String stringPattern = "\"(\\\\.|[^\"\\\\])*\"";
+    String operatorPattern = "==|!=|<=|>=|\\+\\+|--|\\+=|-=|\\*=|/=|&&|\\|\\||[+\\-*/=><!]";
+    String delimiterPattern = "[;{}()\\[\\],\\.]";
+    String commentPattern = "//.*|/\\*(.|\\R)*?\\*/";
 
-        Pattern tokenPattern = Pattern.compile(
-            String.format("(%s)|(%s)|(%s)|(%s)|(%s)|(%s)|(%s)", keywordPattern, identifier, number, operator, stringLiteral, methodPattern, delimiter)
-        );
+    Pattern pattern = Pattern.compile(
+        String.join("|",
+            commentPattern,
+            keywordPattern,
+            methodPattern,
+            identifierPattern,
+            numberPattern,
+            stringPattern,
+            operatorPattern,
+            delimiterPattern
+        )
+    );
 
-        Matcher matcher = tokenPattern.matcher(line);
-        while (matcher.find()) {
-            if (matcher.group(1) != null) {
-                System.out.println("Palavra-chave: " + matcher.group(1));
-            } else if (matcher.group(2) != null) {
-                System.out.println("Identificador: " + matcher.group(2));
-            } else if (matcher.group(3) != null) {
-                System.out.println("Número: " + matcher.group(3));
-            } else if (matcher.group(4) != null) {
-                System.out.println("Operador: " + matcher.group(4));
-            } else if (matcher.group(5) != null) {
-                System.out.println("String: " + matcher.group(5));
-            } else if (matcher.group(6) != null) {
-                System.out.println("Método: " + matcher.group(6));
-            } else if (matcher.group(7) != null) {
-                System.out.println("Delimitador: " + matcher.group(7));
-            }
-        }
+    Matcher matcher = pattern.matcher(line);
+    while (matcher.find()) {
+        String token = matcher.group();
+        if (token.matches(commentPattern)) continue;
+        else if (token.matches(keywordPattern)) System.out.println("Palavra-chave: " + token);
+        else if (token.matches(methodPattern)) System.out.println("Método: " + token);
+        else if (token.matches(identifierPattern)) System.out.println("Identificador: " + token);
+        else if (token.matches(numberPattern)) System.out.println("Número: " + token);
+        else if (token.matches(stringPattern)) System.out.println("String: " + token);
+        else if (token.matches(operatorPattern)) System.out.println("Operador: " + token);
+        else if (token.matches(delimiterPattern)) System.out.println("Delimitador: " + token);
     }
 }
+    }

@@ -1,0 +1,3 @@
+boolean flag = true;
+double exp = 2.5e10;
+char c = 'x';

@@ -1,0 +1,7 @@
+// Teste com números e operadores compostos
+int a = 42;
+float pi = 3.14;
+a += 10;
+if (a >= 50 && pi != 0) {
+    a--;
+}
